@@ -5,16 +5,23 @@ on:
     branches:
       - main
   schedule:
-    - cron: '0 0 * * *'  # Atualiza uma vez por dia
+    - cron: '0 0 * * *'  # Executa diariamente à meia-noite
 
 jobs:
   update-readme:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout do Repositório
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
-      - name: Atualizar README
-        uses: teoxoy/profile-readme-stats@v1
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Atualizar README com GitHub Stats
+        run: |
+          curl -o README.md "https://github-readme-stats.vercel.app/api?username=Cleiltonss&show_icons=true&theme=radical"
+      
+      - name: Commit e Push se Alterado
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add README.md
+          git commit -m "Atualizar GitHub Stats [Automático]" || echo "Nada para comitar"
+          git push
